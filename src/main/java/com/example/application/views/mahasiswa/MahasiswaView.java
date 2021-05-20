@@ -1,5 +1,9 @@
 package com.example.application.views.mahasiswa;
 
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.Locale;
+
 import com.example.application.entity.Mahasiswa;
 import com.example.application.entity.TempatLahir;
 import com.example.application.repo.MahasiswaRepo;
@@ -10,6 +14,7 @@ import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.provider.DataProvider;
+import com.vaadin.flow.data.renderer.LocalDateRenderer;
 import com.vaadin.flow.data.renderer.TextRenderer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
@@ -57,9 +62,13 @@ public class MahasiswaView extends VerticalLayout {
     
         gridCrud.getGrid().setPageSize(50);
 
-        gridCrud.getGrid().setColumns("nama", "tglLahir");
+        gridCrud.getGrid().setColumns("nama");
 
         gridCrud.getGrid().addColumn("tempatLahir.nama").setHeader("Tempat Lahir");
+
+        gridCrud.getGrid().addColumn(new LocalDateRenderer<>(Mahasiswa::getTglLahir,DateTimeFormatter
+        .ofPattern("dd MMMM yyyy", new Locale("in", "ID"))))
+        .setHeader("Tanggal Lahir");
 
         gridCrud.getCrudFormFactory().setUseBeanValidation(true);
 
@@ -90,7 +99,7 @@ public class MahasiswaView extends VerticalLayout {
             @Override
             public DataProvider<Mahasiswa, ?> getDataProvider() {
                 return DataProvider.fromCallbacks(
-                        query -> mahasiswaRepo.findByNamaContainsIgnoreCase(filter.getValue(), new OffsetBasedPageRequest(query)).stream(),
+                        query -> mahasiswaRepo.findByNamaContainsIgnoreCaseOrderByAuditDateDesc(filter.getValue(), new OffsetBasedPageRequest(query)).stream(),
                         query -> (int) mahasiswaRepo.countByNamaContainsIgnoreCase(filter.getValue()));
             }
 

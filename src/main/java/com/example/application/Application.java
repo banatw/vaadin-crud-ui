@@ -1,6 +1,7 @@
 package com.example.application;
 
 import java.time.ZoneId;
+import java.util.Locale;
 import java.util.Random;
 
 import com.example.application.entity.Mahasiswa;
@@ -39,15 +40,15 @@ public class Application extends SpringBootServletInitializer implements Command
 
     @Override
     public void run(String... args) throws Exception {
-        Faker faker = new Faker();
-        for (int i = 0; i < 1000; i++) {
+        Faker faker = new Faker(new Locale("in", "ID"));
+        for (int i = 0; i < 100000; i++) {
             TempatLahir tempatLahir = new TempatLahir();
             tempatLahir.setIdTempatLahir(i);
             tempatLahir.setNama(faker.address().cityName());
             tempatLahirService.addTempatLahir(tempatLahir);
         }
 
-        for (int i = 0; i < 1000000; i++) {
+        for (int i = 0; i < 1000; i++) {
             Mahasiswa mahasiswa = new Mahasiswa();
             mahasiswa.setNama(faker.name().fullName());
             mahasiswa.setTglLahir(faker.date().birthday().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
