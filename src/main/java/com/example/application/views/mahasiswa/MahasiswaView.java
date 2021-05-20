@@ -8,6 +8,7 @@ import com.example.application.service.MahasiswaService;
 import com.example.application.views.main.MainView;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.renderer.TextRenderer;
 import com.vaadin.flow.router.PageTitle;
@@ -47,7 +48,13 @@ public class MahasiswaView extends VerticalLayout {
 
     private void generateComponent() {
         GridCrud<Mahasiswa> gridCrud = new GridCrud<>(Mahasiswa.class);
+        TextField filter = new TextField();
+        
+        filter.setPlaceholder("Filter by name");
+        filter.setClearButtonVisible(true);
 
+        gridCrud.getCrudLayout().addFilterComponent(filter);
+    
         gridCrud.getGrid().setPageSize(50);
 
         gridCrud.getGrid().setColumns("nama", "tglLahir");
@@ -60,6 +67,8 @@ public class MahasiswaView extends VerticalLayout {
 
         gridCrud.getCrudFormFactory().setFieldProvider("tempatLahir", new ComboBoxProvider<>("Tempat Lahir",
                 tempatLahirRepo.findAll(), new TextRenderer<>(TempatLahir::getNama), TempatLahir::getNama));
+
+        filter.addValueChangeListener(e->gridCrud.refreshGrid());
 
         gridCrud.setCrudListener(new LazyCrudListener<Mahasiswa>() {
 
@@ -81,8 +90,8 @@ public class MahasiswaView extends VerticalLayout {
             @Override
             public DataProvider<Mahasiswa, ?> getDataProvider() {
                 return DataProvider.fromCallbacks(
-                        query -> mahasiswaRepo.findAll(new OffsetBasedPageRequest(query)).stream(),
-                        query -> (int) mahasiswaRepo.count());
+                        query -> mahasiswaRepo.findByNamaContainsIgnoreCase(filter.getValue(), new OffsetBasedPageRequest(query)).stream(),
+                        query -> (int) mahasiswaRepo.countByNamaContainsIgnoreCase(filter.getValue()));
             }
 
         });

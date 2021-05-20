@@ -1,9 +1,13 @@
 package com.example.application.service;
 
+import java.util.List;
+
 import com.example.application.entity.TempatLahir;
 import com.example.application.repo.TempatLahirRepo;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -27,4 +31,11 @@ public class TempatLahirService {
         tempatLahirRepo.deleteById(id);
     }
 
+    public List<TempatLahir> findAll() {
+        return tempatLahirRepo.findAll();
+    }
+
+    public Page<TempatLahir> findAll(Pageable pageable) {
+        return tempatLahirRepo.findAll(pageable);
+    }
 }

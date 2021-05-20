@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Data
 @NoArgsConstructor
-public class Mahasiswa {
+public class Mahasiswa  {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer idMahasiswa;
