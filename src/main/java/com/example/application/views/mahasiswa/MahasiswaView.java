@@ -11,6 +11,7 @@ import com.example.application.repo.TempatLahirRepo;
 import com.example.application.service.MahasiswaService;
 import com.example.application.views.main.MainView;
 import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.provider.DataProvider;
@@ -59,8 +60,12 @@ public class MahasiswaView extends VerticalLayout {
         filter.setClearButtonVisible(true);
 
         gridCrud.getCrudLayout().addFilterComponent(filter);
+
+        gridCrud.getCrudLayout().addToolbarComponent(new Button("Export"));
     
         gridCrud.getGrid().setPageSize(50);
+
+        gridCrud.setRowCountCaption("$d mahasisawa ditemukan");
 
         gridCrud.getGrid().setColumns("nama");
 
@@ -99,8 +104,8 @@ public class MahasiswaView extends VerticalLayout {
             @Override
             public DataProvider<Mahasiswa, ?> getDataProvider() {
                 return DataProvider.fromCallbacks(
-                        query -> mahasiswaRepo.findByNamaContainsIgnoreCaseOrderByAuditDateDesc(filter.getValue(), new OffsetBasedPageRequest(query)).stream(),
-                        query -> (int) mahasiswaRepo.countByNamaContainsIgnoreCase(filter.getValue()));
+                        query -> mahasiswaRepo.findByNamaContainsIgnoreCaseAndDeletedOrderByAuditDateDesc(filter.getValue(),false, new OffsetBasedPageRequest(query)).stream(),
+                        query -> (int) mahasiswaRepo.countByNamaContainsIgnoreCaseAndDeleted(filter.getValue(),false));
             }
 
         });

@@ -41,7 +41,7 @@ public class Application extends SpringBootServletInitializer implements Command
     @Override
     public void run(String... args) throws Exception {
         Faker faker = new Faker(new Locale("in", "ID"));
-        for (int i = 0; i < 100000; i++) {
+        for (int i = 0; i < 1000; i++) {
             TempatLahir tempatLahir = new TempatLahir();
             tempatLahir.setIdTempatLahir(i);
             tempatLahir.setNama(faker.address().cityName());

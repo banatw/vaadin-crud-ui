@@ -8,9 +8,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 
+import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.Where;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,6 +21,9 @@ import lombok.NoArgsConstructor;
 @Entity
 @Data
 @NoArgsConstructor
+@Table(name = "mahasiswa")
+@SQLDelete(sql = "UPDATE mahasiswa SET deleted = true WHERE id_mahasiswa=?")
+@Where(clause = "deleted=false")
 public class Mahasiswa  {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -33,5 +39,7 @@ public class Mahasiswa  {
 
     @UpdateTimestamp
     private LocalDateTime auditDate;
+
+    private boolean deleted = Boolean.FALSE;
 
 }
