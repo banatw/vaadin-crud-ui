@@ -38,4 +38,8 @@ public class TempatLahirService {
     public Page<TempatLahir> findAll(Pageable pageable) {
         return tempatLahirRepo.findAll(pageable);
     }
+
+    public TempatLahir getById(Integer id) {
+        return tempatLahirRepo.findById(id).get();
+    }
 }

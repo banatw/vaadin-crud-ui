@@ -10,6 +10,7 @@ import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.avatar.Avatar;
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
@@ -23,11 +24,14 @@ import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.PWA;
 import com.vaadin.flow.theme.Theme;
 
+import org.springframework.security.access.annotation.Secured;
+
 /**
  * The main view is a top-level placeholder for other views.
  */
 @PWA(name = "Crud UI", shortName = "Crud UI", enableInstallPrompt = false)
 @Theme(themeFolder = "crudui")
+@Secured("ROLE_USER")
 public class MainView extends AppLayout {
 
     private final Tabs menu;
@@ -67,6 +71,7 @@ public class MainView extends AppLayout {
         logoLayout.add(new Image("images/logo.png", "Crud UI logo"));
         logoLayout.add(new H1("Crud UI"));
         layout.add(logoLayout, menu);
+        layout.add(new Anchor("/logout", "Logout"));
         return layout;
     }
 
@@ -75,11 +80,11 @@ public class MainView extends AppLayout {
         tabs.setOrientation(Tabs.Orientation.VERTICAL);
         tabs.addThemeVariants(TabsVariant.LUMO_MINIMAL);
         tabs.setId("tabs");
-        tabs.add(createMenuItems());
+        tabs.add(createUserMenuItems());
         return tabs;
     }
 
-    private Component[] createMenuItems() {
+    private Component[] createUserMenuItems() {
         return new Tab[] { createTab("Hello World", HelloWorldView.class), createTab("About", AboutView.class),
                 createTab("Mahasiswa", MahasiswaView.class) };
     }

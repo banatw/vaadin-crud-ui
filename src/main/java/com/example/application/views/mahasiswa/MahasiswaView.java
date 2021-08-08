@@ -1,7 +1,6 @@
 package com.example.application.views.mahasiswa;
 
 import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 import java.util.Locale;
 
 import com.example.application.entity.Mahasiswa;
@@ -12,6 +11,7 @@ import com.example.application.service.MahasiswaService;
 import com.example.application.views.main.MainView;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.provider.DataProvider;
@@ -21,12 +21,14 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.vaadin.crudui.crud.LazyCrudListener;
 import org.vaadin.crudui.crud.impl.GridCrud;
 import org.vaadin.crudui.form.impl.field.provider.ComboBoxProvider;
 import org.vaadin.data.spring.OffsetBasedPageRequest;
 
 @Route(value = "mahasiswa", layout = MainView.class)
+@Secured("ROLE_USER")
 @PageTitle(value = "Mahasiswa")
 public class MahasiswaView extends VerticalLayout {
 
@@ -55,25 +57,24 @@ public class MahasiswaView extends VerticalLayout {
     private void generateComponent() {
         GridCrud<Mahasiswa> gridCrud = new GridCrud<>(Mahasiswa.class);
         TextField filter = new TextField();
-        
+
         filter.setPlaceholder("Filter by name");
         filter.setClearButtonVisible(true);
 
         gridCrud.getCrudLayout().addFilterComponent(filter);
 
         gridCrud.getCrudLayout().addToolbarComponent(new Button("Export"));
-    
-        gridCrud.getGrid().setPageSize(50);
 
-        gridCrud.setRowCountCaption("$d mahasisawa ditemukan");
+        gridCrud.getGrid().setPageSize(50);
 
         gridCrud.getGrid().setColumns("nama");
 
         gridCrud.getGrid().addColumn("tempatLahir.nama").setHeader("Tempat Lahir");
 
-        gridCrud.getGrid().addColumn(new LocalDateRenderer<>(Mahasiswa::getTglLahir,DateTimeFormatter
-        .ofPattern("dd MMMM yyyy", new Locale("in", "ID"))))
-        .setHeader("Tanggal Lahir");
+        gridCrud.getGrid()
+                .addColumn(new LocalDateRenderer<>(Mahasiswa::getTglLahir,
+                        DateTimeFormatter.ofPattern("dd MMMM yyyy", new Locale("in", "ID"))))
+                .setHeader("Tanggal Lahir");
 
         gridCrud.getCrudFormFactory().setUseBeanValidation(true);
 
@@ -82,7 +83,7 @@ public class MahasiswaView extends VerticalLayout {
         gridCrud.getCrudFormFactory().setFieldProvider("tempatLahir", new ComboBoxProvider<>("Tempat Lahir",
                 tempatLahirRepo.findAll(), new TextRenderer<>(TempatLahir::getNama), TempatLahir::getNama));
 
-        filter.addValueChangeListener(e->gridCrud.refreshGrid());
+        filter.addValueChangeListener(e -> gridCrud.refreshGrid());
 
         gridCrud.setCrudListener(new LazyCrudListener<Mahasiswa>() {
 
@@ -104,8 +105,9 @@ public class MahasiswaView extends VerticalLayout {
             @Override
             public DataProvider<Mahasiswa, ?> getDataProvider() {
                 return DataProvider.fromCallbacks(
-                        query -> mahasiswaRepo.findByNamaContainsIgnoreCaseAndDeletedOrderByAuditDateDesc(filter.getValue(),false, new OffsetBasedPageRequest(query)).stream(),
-                        query -> (int) mahasiswaRepo.countByNamaContainsIgnoreCaseAndDeleted(filter.getValue(),false));
+                        query -> mahasiswaRepo.findByNamaContainsIgnoreCaseAndDeletedOrderByAuditDateDesc(
+                                filter.getValue(), false, new OffsetBasedPageRequest(query)).stream(),
+                        query -> (int) mahasiswaRepo.countByNamaContainsIgnoreCaseAndDeleted(filter.getValue(), false));
             }
 
         });
